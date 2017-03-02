@@ -22892,7 +22892,21 @@ SwaggerUi.Views.MainView = Backbone.View.extend({
       auths: auths,
       swaggerOptions: this.options.swaggerOptions
     });
-    $('#resources', this.el).append(resourceView.render().el);
+      $('#resources').data('low', 0);
+      $('#resources').data('step', 8);
+    var renderdelay=220;
+    ittttttttttttta++
+    if(ittttttttttttta < ($('#resources').data('step') + 1) ) {
+        $('#resources', this.el).append(resourceView.render().el);
+        updateShownEndpoints();
+        setupPaginator();
+    } else {
+        setTimeout(function () {
+            $('#resources', this.el).append(resourceView.render().el);
+            updateShownEndpoints();
+            setupPaginator();
+        }, (ittttttttttttta - $('#resources').data('step'))  * renderdelay );
+    }
   },
 
   clear: function(){
@@ -22908,6 +22922,50 @@ SwaggerUi.Views.MainView = Backbone.View.extend({
     }
   }
 });
+var ittttttttttttta=0;
+
+function updateShownEndpoints() {
+    $('#resources .resource').each(function(i,res) {
+        var upperbound = $('#resources').data('low') + $('#resources').data('step');
+        $(res).toggle(i >= $('#resources').data('low') && i < upperbound);
+    });
+}
+
+function setupPaginator() {
+
+    var rescount = ittttttttttttta;
+    if (rescount > $('#resources').data('step')) {
+        var paginator;
+        paginator = $(".pagination");
+        if(paginator.length==0) {
+            paginator = $('<div />').addClass('pagination');
+            $('#resources_container').prepend(paginator);
+            $('#resources_container').append(paginator);
+
+        }
+        var clickBehavior = function () {
+            $('.paginateButton').removeClass('active');
+            $(this).addClass('active');
+            $('#resources').data('low', $('#resources').data('step') * $(this).attr("num") );
+            updateShownEndpoints();
+        };
+
+
+        for (var i = 0; ($('#resources').data('step') * i) < rescount; i++) {
+            if($(".pagButton"+i).length > 0)continue;
+            var paginateButton = $('<span />');
+            if (i === 0) {
+                paginateButton.addClass('active');
+            }
+            paginateButton.addClass('paginateButton').addClass('btn').addClass('btn-default').addClass("pagButton"+i);;
+            paginateButton.text((i + 1) + ' ');
+            paginateButton.attr("num",i);
+            paginateButton.click(clickBehavior);
+            paginator.append(paginateButton);
+        }
+
+    }
+}
 
 'use strict';
 
